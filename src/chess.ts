@@ -1235,8 +1235,25 @@ export class Chess {
 
   private _attacked(color: Color, square: number): boolean
   private _attacked(color: Color, square: number, verbose: false): boolean
+  private _attacked(
+    color: Color,
+    square: number,
+    verbose: false,
+    xray: boolean,
+  ): boolean
   private _attacked(color: Color, square: number, verbose: true): Square[]
-  private _attacked(color: Color, square: number, verbose?: boolean) {
+  private _attacked(
+    color: Color,
+    square: number,
+    verbose: true,
+    xray: boolean,
+  ): Square[]
+  private _attacked(
+    color: Color,
+    square: number,
+    verbose?: boolean,
+    xray: boolean = false,
+  ) {
     const attackers: Square[] = []
     for (let i = Ox88.a8; i <= Ox88.h1; i++) {
       // did we run off the end of the board
@@ -1289,9 +1306,11 @@ export class Chess {
         let j = i + offset
 
         let blocked = false
+        let blockingPiece = null
         while (j !== square) {
           if (this._board[j] != null) {
             blocked = true
+            blockingPiece = this._board[j]
             break
           }
           j += offset
@@ -1305,6 +1324,58 @@ export class Chess {
             continue
           }
         }
+
+        if (xray && blockingPiece != null) {
+          // Check if the blocking piece can attack the target square
+          const blockingIndex = square - j + 119
+          const blockingCanAttack =
+            blockingIndex >= 0 &&
+            blockingIndex < ATTACKS.length &&
+            !!(ATTACKS[blockingIndex] & PIECE_MASKS[blockingPiece.type])
+
+          if (blockingCanAttack) {
+            /*
+             * The blocking piece attacks the target square, so we can x-ray through it.
+             * First, add the sliding piece as an attacker.
+             */
+            if (!verbose) {
+              return true
+            } else {
+              attackers.push(algebraic(i))
+            }
+
+            // Continue looking for pieces beyond the first blocker
+            let k = j + offset
+            while ((k & 0x88) === 0) {
+              const pieceOnRay = this._board[k]
+              if (pieceOnRay != null) {
+                // Check if this piece is the right color and can attack the target square
+                const rayIndex = k - square + 119
+                const canAttack =
+                  pieceOnRay.color === color &&
+                  rayIndex >= 0 &&
+                  rayIndex < ATTACKS.length &&
+                  !!(ATTACKS[rayIndex] & PIECE_MASKS[pieceOnRay.type])
+
+                if (canAttack) {
+                  // This piece also attacks the target, so we can continue x-raying through it
+                  if (!verbose) {
+                    return true
+                  } else {
+                    attackers.push(algebraic(k))
+                  }
+                  // Continue past this piece to look for more
+                  k += offset
+                  continue
+                }
+                // This piece blocks and does NOT attack the target, so stop x-raying
+                break
+              }
+              k += offset
+            }
+            continue
+          }
+        }
       }
     }
 
@@ -1315,11 +1386,15 @@ export class Chess {
     }
   }
 
-  attackers(square: Square, attackedBy?: Color): Square[] {
+  attackers(
+    square: Square,
+    attackedBy?: Color,
+    xray: boolean = false,
+  ): Square[] {
     if (!attackedBy) {
-      return this._attacked(this._turn, Ox88[square], true)
+      return this._attacked(this._turn, Ox88[square], true, xray)
     } else {
-      return this._attacked(attackedBy, Ox88[square], true)
+      return this._attacked(attackedBy, Ox88[square], true, xray)
     }
   }
 

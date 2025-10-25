@@ -19,7 +19,7 @@ export class Chess {
     // (undocumented)
     ascii(): string;
     // (undocumented)
-    attackers(square: Square, attackedBy?: Color): Square[];
+    attackers(square: Square, attackedBy?: Color, xray?: boolean): Square[];
     // (undocumented)
     board(): ({
         square: Square;

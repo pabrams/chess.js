@@ -216,3 +216,23 @@ test('attackers - readme tests', () => {
   chess.load('4k3/4n3/8/8/8/8/4R3/4K3 w - - 0 1')
   expect(chess.attackers('c6', BLACK)).to.have.members(['e7'])
 })
+
+test('attackers - with xray', () => {
+  const start = new Chess()
+  expect(start.attackers('e3', WHITE, true)).to.have.members(['c1', 'd2', 'f2'])
+
+  const xrayThroughKing = new Chess('8/8/8/4r3/4k3/8/8/4Q2K b - - 0 1')
+  expect(xrayThroughKing.attackers('e5', WHITE, true)).to.have.members(['e1'])
+
+  const manyDiagonalAttackers = new Chess(
+    '6K1/2Q5/3B4/4b3/5q2/8/k6q/8 w - - 0 1',
+  )
+  expect(manyDiagonalAttackers.attackers('e5', WHITE, true)).to.have.members([
+    'c7',
+    'd6',
+  ])
+  expect(manyDiagonalAttackers.attackers('e5', BLACK, true)).to.have.members([
+    'f4',
+    'h2',
+  ])
+})

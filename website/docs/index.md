@@ -156,13 +156,13 @@ chess.ascii()
 //          a  b  c  d  e  f  g  h'
 ```
 
-### .attackers(square, [ color ])
+### .attackers(square, [ color ], [ xray: false ])
 
 Returns a list of squares that have pieces belonging to the side to move that
 can attack the given square. This function takes an optional parameter which can
-change which color the pieces should belong to.
+change which color the pieces should belong to. Set `xray` to include batteries.
 
-```ts
+````ts
 const chess = new Chess()
 
 chess.attackers('f3')
@@ -184,7 +184,11 @@ chess.attackers('f3', WHITE)
 chess.load('4k3/4n3/8/8/8/8/4R3/4K3 w - - 0 1')
 chess.attackers('c6', BLACK)
 // -> ['e7'] (pieces still attack a square even if they are pinned)
-```
+
+chess.load('8/8/8/4r3/4k3/8/8/4Q2K b - - 0 1')
+chess.attackers('e5', WHITE, true)
+// -> ['e1'] (sliding pieces attack the square beyond the king)
+
 
 ### .board()
 
@@ -216,7 +220,7 @@ chess.board()
 //       {square: 'f1', type: 'b', color: 'w'},
 //       {square: 'g1', type: 'n', color: 'w'},
 //       {square: 'h1', type: 'r', color: 'w'}]]
-```
+````
 
 ### .clear(\{ preserveHeaders = false \} = \{\})
 
