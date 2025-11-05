@@ -1233,10 +1233,99 @@ export class Chess {
     }
   }
 
+  private _attacks(
+    attackingPiece: Piece,
+    attackerSquare: number,
+    targetSquare: number,
+    xray: boolean = false,
+  ): boolean {
+    const attackVector = attackerSquare - targetSquare
+    const distance = attackVector + 119
+
+    const attackerCanHitSquare =
+      ATTACKS[distance] & PIECE_MASKS[attackingPiece.type]
+    if (!attackerCanHitSquare) {
+      return false
+    }
+
+    if (attackingPiece.type === PAWN) {
+      const pawnFacesCorrectDirection =
+        (attackVector > 0 && attackingPiece.color === WHITE) ||
+        (attackVector <= 0 && attackingPiece.color === BLACK)
+      return pawnFacesCorrectDirection
+    }
+
+    if (attackingPiece.type === 'n' || attackingPiece.type === 'k') {
+      return true
+    }
+
+    const canXrayThrough = (p: Piece) =>
+      !((p.color === attackingPiece.color && p.type === 'k') || p.type === 'n')
+
+    const distanceToNextSquareInRay = RAYS[distance]
+    let currentSquare = attackerSquare + distanceToNextSquareInRay
+
+    while (currentSquare !== targetSquare) {
+      const blockingPiece = this._board[currentSquare]
+      if (blockingPiece != null) {
+        if (!xray) {
+          return false
+        }
+
+        if (!canXrayThrough(blockingPiece)) {
+          return false
+        }
+
+        const blockingPieceAttacksTarget = this._attacks(
+          blockingPiece,
+          currentSquare,
+          targetSquare,
+          true,
+        )
+        if (!blockingPieceAttacksTarget) {
+          return false
+        }
+
+        currentSquare += distanceToNextSquareInRay
+        while (currentSquare !== targetSquare) {
+          const nextPiece = this._board[currentSquare]
+          if (nextPiece != null) {
+            if (!canXrayThrough(nextPiece)) {
+              return false
+            }
+            return this._attacks(nextPiece, currentSquare, targetSquare, true)
+          }
+          currentSquare += distanceToNextSquareInRay
+        }
+        return true
+      }
+      currentSquare += distanceToNextSquareInRay
+    }
+
+    return true
+  }
+
   private _attacked(color: Color, square: number): boolean
   private _attacked(color: Color, square: number, verbose: false): boolean
+  private _attacked(
+    color: Color,
+    square: number,
+    verbose: false,
+    xray: boolean,
+  ): boolean
   private _attacked(color: Color, square: number, verbose: true): Square[]
-  private _attacked(color: Color, square: number, verbose?: boolean) {
+  private _attacked(
+    color: Color,
+    square: number,
+    verbose: true,
+    xray: boolean,
+  ): Square[]
+  private _attacked(
+    color: Color,
+    square: number,
+    verbose?: boolean,
+    xray: boolean = false,
+  ) {
     const attackers: Square[] = []
     for (let i = Ox88.a8; i <= Ox88.h1; i++) {
       // did we run off the end of the board
@@ -1258,52 +1347,13 @@ export class Chess {
         continue
       }
 
-      const index = difference + 119
-
-      if (ATTACKS[index] & PIECE_MASKS[piece.type]) {
-        if (piece.type === PAWN) {
-          if (
-            (difference > 0 && piece.color === WHITE) ||
-            (difference <= 0 && piece.color === BLACK)
-          ) {
-            if (!verbose) {
-              return true
-            } else {
-              attackers.push(algebraic(i))
-            }
-          }
+      const pieceCanAttack = this._attacks(piece, i, square, xray)
+      if (pieceCanAttack) {
+        if (!verbose) {
+          return true
+        } else {
+          attackers.push(algebraic(i))
           continue
-        }
-
-        // if the piece is a knight or a king
-        if (piece.type === 'n' || piece.type === 'k') {
-          if (!verbose) {
-            return true
-          } else {
-            attackers.push(algebraic(i))
-            continue
-          }
-        }
-
-        const offset = RAYS[index]
-        let j = i + offset
-
-        let blocked = false
-        while (j !== square) {
-          if (this._board[j] != null) {
-            blocked = true
-            break
-          }
-          j += offset
-        }
-
-        if (!blocked) {
-          if (!verbose) {
-            return true
-          } else {
-            attackers.push(algebraic(i))
-            continue
-          }
         }
       }
     }
@@ -1315,11 +1365,15 @@ export class Chess {
     }
   }
 
-  attackers(square: Square, attackedBy?: Color): Square[] {
+  attackers(
+    square: Square,
+    attackedBy?: Color,
+    xray: boolean = false,
+  ): Square[] {
     if (!attackedBy) {
-      return this._attacked(this._turn, Ox88[square], true)
+      return this._attacked(this._turn, Ox88[square], true, xray)
     } else {
-      return this._attacked(attackedBy, Ox88[square], true)
+      return this._attacked(attackedBy, Ox88[square], true, xray)
     }
   }
 

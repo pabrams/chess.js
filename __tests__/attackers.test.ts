@@ -1,10 +1,10 @@
 import { Chess, Color, SQUARES, WHITE, BLACK } from '../src/chess'
 import { expect, test } from 'vitest'
 
-function getAttackerCount(chess: Chess, color: Color) {
+function getAttackerCount(chess: Chess, color: Color, xray: boolean = false) {
   return Array.from(
     { length: 64 },
-    (_, i) => chess.attackers(SQUARES[i], color).length,
+    (_, i) => chess.attackers(SQUARES[i], color, xray).length,
   )
 }
 
@@ -215,4 +215,204 @@ test('attackers - readme tests', () => {
   expect(chess.attackers('f3', WHITE)).to.have.members(['g2', 'd1', 'g1'])
   chess.load('4k3/4n3/8/8/8/8/4R3/4K3 w - - 0 1')
   expect(chess.attackers('c6', BLACK)).to.have.members(['e7'])
+})
+
+test('xray attackers', () => {
+  const start = new Chess()
+  expect(start.attackers('e3', WHITE, true)).to.have.members(['c1', 'd2', 'f2'])
+
+  const xrayThroughKing = new Chess('8/8/8/4r3/4k3/8/8/4Q2K b - - 0 1')
+  expect(xrayThroughKing.attackers('e5', WHITE, true)).to.have.members(['e1'])
+
+  const manyDiagonalAttackers = new Chess(
+    '6K1/2Q5/3B4/4b3/5q2/8/k6q/8 w - - 0 1',
+  )
+  expect(manyDiagonalAttackers.attackers('e5', WHITE, true)).to.have.members([
+    'c7',
+    'd6',
+  ])
+  expect(manyDiagonalAttackers.attackers('e5', BLACK, true)).to.have.members([
+    'f4',
+    'h2',
+  ])
+  const evenMoreDiagonalAttackers = new Chess(
+    'Q4K1k/1Q5p/2Q5/3Q4/4Q3/5Q2/6Q1/7Q w - - 0 1',
+  )
+  expect(
+    evenMoreDiagonalAttackers.attackers('a8', WHITE, true),
+  ).to.have.members(['b7', 'c6', 'd5', 'e4', 'f3', 'g2', 'h1'])
+
+  const a8Position = new Chess('1k4R1/ppp5/8/8/8/8/6B1/1K6 w - - 0 1')
+  expect(a8Position.attackers('a8', WHITE, true)).to.have.members(['g8'])
+})
+
+test('xray attackers - attacker count in default position', () => {
+  const chess = new Chess()
+
+  // prettier-ignore
+  const expectedWhiteAttackerCount = [
+    0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0,
+    3, 3, 3, 3, 3, 4, 2, 3,
+    1, 1, 1, 4, 4, 1, 1, 1,
+    0, 1, 1, 1, 1, 1, 1, 0,
+  ]
+  const r = getAttackerCount(chess, WHITE, true)
+  expect(r).toEqual(expectedWhiteAttackerCount)
+
+  // prettier-ignore
+  const expectedBlackAttackerCount = [
+    0, 1, 1, 1, 1, 1, 1, 0,
+    1, 1, 1, 4, 4, 1, 1, 1,
+    3, 3, 3, 3, 3, 4, 2, 3,
+    0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0,
+  ]
+  expect(getAttackerCount(chess, BLACK, true)).toEqual(
+    expectedBlackAttackerCount,
+  )
+})
+
+test('xray attackers - attacker count in middlegame position', () => {
+  const chess = new Chess(
+    'r3kb1r/1b3ppp/pqnppn2/1p6/4PBP1/PNN5/1PPQBP1P/2KR3R b kq - 0 1',
+  ) // Gujrathi–Firouzja, round 6
+
+  // prettier-ignore
+  const expectedWhiteAttackerCount = [
+    0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 3, 0, 0, 0, 2,
+    1, 2, 1, 4, 1, 2, 2, 2,
+    1, 1, 1, 3, 1, 1, 1, 0,
+    1, 1, 2, 4, 3, 1, 3, 0,
+    1, 1, 2, 4, 2, 0, 0, 2,
+    1, 2, 5, 5, 3, 3, 2, 1,
+  ]
+  expect(getAttackerCount(chess, WHITE, true)).toEqual(
+    expectedWhiteAttackerCount,
+  )
+
+  // prettier-ignore
+  const expectedBlackAttackerCount = [
+    1, 2, 2, 4, 2, 2, 2, 0,
+    3, 1, 1, 2, 3, 1, 1, 2,
+    3, 0, 2, 1, 1, 1, 2, 2,
+    2, 2, 3, 2, 2, 1, 0, 1,
+    1, 1, 1, 2, 1, 0, 1, 0,
+    0, 0, 0, 0, 1, 0, 0, 0,
+    0, 0, 0, 0, 0, 1, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0,
+  ]
+  expect(getAttackerCount(chess, BLACK, true)).toEqual(
+    expectedBlackAttackerCount,
+  )
+})
+
+test('xray attackers - attacker count when all but one square is covered', () => {
+  const chess = new Chess('Q4K1k/1Q5p/2Q5/3Q4/4Q3/5Q2/6Q1/7Q w - - 0 1')
+
+  // prettier-ignore
+  const expectedWhiteAttackerCount = [
+    7, 2, 3, 2, 4, 2, 3, 0,
+    2, 7, 2, 3, 3, 4, 3, 3,
+    3, 2, 7, 2, 3, 2, 3, 2,
+    2, 3, 2, 7, 2, 3, 2, 3,
+    3, 2, 3, 2, 7, 2, 3, 2,
+    2, 3, 2, 3, 2, 7, 2, 3,
+    3, 2, 3, 2, 3, 2, 7, 2,
+    2, 3, 2, 3, 2, 3, 2, 7,
+  ]
+  expect(getAttackerCount(chess, WHITE, true)).toEqual(
+    expectedWhiteAttackerCount,
+  )
+
+  // prettier-ignore
+  const expectedBlackAttackerCount = [
+    0, 0, 0, 0, 0, 0, 1, 0,
+    0, 0, 0, 0, 0, 0, 1, 1,
+    0, 0, 0, 0, 0, 0, 1, 0,
+    0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0,
+  ]
+  expect(getAttackerCount(chess, BLACK, true)).toEqual(
+    expectedBlackAttackerCount,
+  )
+})
+
+test('xray attackers - vertical stack', () => {
+  const chess = new Chess('1q6/1r6/1k6/1R6/1r6/1R6/1Q6/1K6 b - - 0 1')
+
+  // prettier-ignore
+  const expectedWhiteAttackerCount = [
+    0, 0, 0, 0, 0, 0, 0, 1,
+    0, 1, 0, 0, 0, 0, 1, 0,
+    0, 3, 0, 0, 0, 1, 0, 0,
+    1, 2, 1, 1, 2, 1, 1, 1,
+    0, 3, 0, 1, 0, 0, 0, 0,
+    2, 2, 2, 1, 1, 1, 1, 1,
+    2, 3, 2, 1, 1, 1, 1, 1,
+    2, 3, 2, 0, 0, 0, 0, 0,
+  ]
+  expect(getAttackerCount(chess, WHITE, true)).toEqual(
+    expectedWhiteAttackerCount,
+  )
+
+  // prettier-ignore
+  const expectedBlackAttackerCount = [
+    1, 1, 1, 1, 1, 1, 1, 1,
+    3, 2, 3, 1, 1, 1, 1, 1,
+    1, 3, 1, 1, 0, 0, 0, 0,
+    1, 2, 1, 0, 1, 0, 0, 0,
+    1, 0, 1, 1, 1, 2, 1, 1,
+    0, 1, 0, 0, 0, 0, 1, 0,
+    0, 1, 0, 0, 0, 0, 0, 1,
+    0, 1, 0, 0, 0, 0, 0, 0,
+  ]
+  expect(getAttackerCount(chess, BLACK, true)).toEqual(
+    expectedBlackAttackerCount,
+  )
+})
+
+test('xray attackers - bishops', () => {
+  const chess = new Chess('6q1/2b2B2/2R1K3/1R1Qr3/1r3k2/1b6/b7/8 b - - 0 1')
+
+  // prettier-ignore
+  const expectedWhiteAttackerCount = [
+    0, 1, 0, 1, 1, 0, 1, 0,
+    0, 1, 1, 2, 1, 1, 0, 0,
+    1, 2, 1, 3, 3, 1, 1, 0,
+    2, 1, 3, 2, 3, 3, 2, 3,
+    0, 1, 2, 1, 1, 0, 0, 0,
+    0, 2, 1, 1, 0, 1, 0, 0,
+    1, 0, 1, 1, 0, 0, 1, 0,
+    0, 0, 1, 1, 0, 0, 0, 1,
+  ]
+  expect(getAttackerCount(chess, WHITE, true)).toEqual(
+    expectedWhiteAttackerCount,
+  )
+
+  // prettier-ignore
+  const expectedBlackAttackerCount = [
+    1, 3, 1, 2, 1, 1, 0, 1,
+    0, 1, 0, 0, 1, 1, 1, 1,
+    0, 2, 0, 1, 4, 0, 1, 0,
+    2, 2, 1, 3, 2, 2, 3, 1,
+    2, 0, 3, 1, 3, 1, 2, 0,
+    0, 2, 0, 0, 2, 1, 2, 0,
+    1, 0, 1, 0, 1, 0, 1, 0,
+    0, 1, 0, 1, 1, 0, 1, 0,
+  ]
+  expect(getAttackerCount(chess, BLACK, true)).toEqual(
+    expectedBlackAttackerCount,
+  )
 })

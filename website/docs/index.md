@@ -156,13 +156,15 @@ chess.ascii()
 //          a  b  c  d  e  f  g  h'
 ```
 
-### .attackers(square, [ color ])
+### .load(fen: string, \{ skipValidation = false, preserveHeaders = false \} = \{\})
+
+### .attackers(square: Square, attackedBy?: Color, xray: boolean = false)
 
 Returns a list of squares that have pieces belonging to the side to move that
 can attack the given square. This function takes an optional parameter which can
-change which color the pieces should belong to.
+change which color the pieces should belong to. Set `xray` to include batteries.
 
-```ts
+````ts
 const chess = new Chess()
 
 chess.attackers('f3')
@@ -184,7 +186,14 @@ chess.attackers('f3', WHITE)
 chess.load('4k3/4n3/8/8/8/8/4R3/4K3 w - - 0 1')
 chess.attackers('c6', BLACK)
 // -> ['e7'] (pieces still attack a square even if they are pinned)
-```
+
+chess.load('8/8/8/4r3/4k3/8/8/4Q2K b - - 0 1')
+chess.attackers('e5', WHITE, true)
+// -> ['e1'] (sliding pieces attack the square beyond the king)
+
+chess.load('Q4K1k/1Q5p/2Q5/3Q4/4Q3/5Q2/6Q1/7Q w - - 0 1')
+chess.attackers('a8', WHITE, true)
+// -> ['b7', 'c6', 'd5', 'e4', 'f3', 'g2', 'h1'] (the 8 white queens on the diagonals all x-ray through and attack each other)
 
 ### .board()
 
@@ -1051,3 +1060,4 @@ validateFen('4r3/8/X12XPk/1p6/pP2p1R1/P1B5/2P2K2/3r4 w - - 1 45')
 // -> { ok: false,
 //     error: '1st field (piece positions) is invalid [invalid piece].' }
 ```
+````
