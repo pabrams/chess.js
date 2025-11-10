@@ -1287,17 +1287,7 @@ export class Chess {
         }
 
         currentSquare += distanceToNextSquareInRay
-        while (currentSquare !== targetSquare) {
-          const nextPiece = this._board[currentSquare]
-          if (nextPiece != null) {
-            if (!canXrayThrough(nextPiece)) {
-              return false
-            }
-            return this._attacks(nextPiece, currentSquare, targetSquare, true)
-          }
-          currentSquare += distanceToNextSquareInRay
-        }
-        return true
+        continue
       }
       currentSquare += distanceToNextSquareInRay
     }
