@@ -416,3 +416,105 @@ test('xray attackers - bishops', () => {
     expectedBlackAttackerCount,
   )
 })
+
+test('xray attackers - cannot xray through own king, part 1', () => {
+  const chess = new Chess('6k1/8/8/5n2/4K3/3B4/8/8 b - - 0 1')
+
+  // prettier-ignore
+  const expectedWhiteAttackerCount = [
+    0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0,
+    1, 0, 0, 0, 0, 0, 0, 0,
+    0, 1, 0, 1, 1, 1, 0, 0,
+    0, 0, 1, 1, 1, 1, 0, 0,
+    0, 0, 0, 1, 1, 1, 0, 0,
+    0, 0, 1, 0, 1, 0, 0, 0,
+    0, 1, 0, 0, 0, 1, 0, 0,
+  ]
+  expect(getAttackerCount(chess, WHITE, true)).toEqual(
+    expectedWhiteAttackerCount,
+  )
+
+  // prettier-ignore
+  const expectedBlackAttackerCount = [
+    0, 0, 0, 0, 0, 1, 0, 1,
+    0, 0, 0, 0, 1, 1, 2, 1,
+    0, 0, 0, 1, 0, 0, 0, 1,
+    0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 1, 0, 0, 0, 1,
+    0, 0, 0, 0, 1, 0, 1, 0,
+    0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0,
+  ]
+  expect(getAttackerCount(chess, BLACK, true)).toEqual(
+    expectedBlackAttackerCount,
+  )
+})
+
+test('xray attackers - cannot xray through own king, part 2', () => {
+  const chess = new Chess('1RR5/k7/r7/r7/8/8/8/7K b - - 0 1')
+
+  // prettier-ignore
+  const expectedWhiteAttackerCount = [
+    2, 1, 1, 2, 2, 2, 2, 2,
+    0, 1, 1, 0, 0, 0, 0, 0,
+    0, 1, 1, 0, 0, 0, 0, 0,
+    0, 1, 1, 0, 0, 0, 0, 0,
+    0, 1, 1, 0, 0, 0, 0, 0,
+    0, 1, 1, 0, 0, 0, 0, 0,
+    0, 1, 1, 0, 0, 0, 1, 1,
+    0, 1, 1, 0, 0, 0, 1, 0,
+  ]
+  expect(getAttackerCount(chess, WHITE, true)).toEqual(
+    expectedWhiteAttackerCount,
+  )
+
+  // prettier-ignore
+  const expectedBlackAttackerCount = [
+    1, 1, 0, 0, 0, 0, 0, 0,
+    2, 1, 0, 0, 0, 0, 0, 0,
+    2, 2, 1, 1, 1, 1, 1, 1,
+    1, 1, 1, 1, 1, 1, 1, 1,
+    2, 0, 0, 0, 0, 0, 0, 0,
+    2, 0, 0, 0, 0, 0, 0, 0,
+    2, 0, 0, 0, 0, 0, 0, 0,
+    2, 0, 0, 0, 0, 0, 0, 0,
+  ]
+  expect(getAttackerCount(chess, BLACK, true)).toEqual(
+    expectedBlackAttackerCount,
+  )
+})
+
+test('xray attackers - can xray through opponent king', () => {
+  const chess = new Chess('1RR5/K7/r7/r7/8/8/8/7k b - - 0 1')
+
+  // prettier-ignore
+  const expectedWhiteAttackerCount = [
+    3, 2, 1, 2, 2, 2, 2, 2,
+    0, 2, 1, 0, 0, 0, 0, 0,
+    1, 2, 1, 0, 0, 0, 0, 0,
+    0, 1, 1, 0, 0, 0, 0, 0,
+    0, 1, 1, 0, 0, 0, 0, 0,
+    0, 1, 1, 0, 0, 0, 0, 0,
+    0, 1, 1, 0, 0, 0, 0, 0,
+    0, 1, 1, 0, 0, 0, 0, 0,
+  ]
+  expect(getAttackerCount(chess, WHITE, true)).toEqual(
+    expectedWhiteAttackerCount,
+  )
+
+  // prettier-ignore
+  const expectedBlackAttackerCount = [
+    2, 0, 0, 0, 0, 0, 0, 0,
+    2, 0, 0, 0, 0, 0, 0, 0,
+    1, 1, 1, 1, 1, 1, 1, 1,
+    1, 1, 1, 1, 1, 1, 1, 1,
+    2, 0, 0, 0, 0, 0, 0, 0,
+    2, 0, 0, 0, 0, 0, 0, 0,
+    2, 0, 0, 0, 0, 0, 1, 1,
+    2, 0, 0, 0, 0, 0, 1, 0,
+  ]
+  expect(getAttackerCount(chess, BLACK, true)).toEqual(
+    expectedBlackAttackerCount,
+  )
+})
