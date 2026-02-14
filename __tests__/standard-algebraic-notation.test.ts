@@ -52,3 +52,16 @@ positions.forEach(({ fen, moves }, i) => {
     expect(chess.moves()).to.have.members(split(moves))
   })
 })
+
+test('move - strictly rejects SAN promotion moves that lack a promotion piece to enforce PGN standards', () => {
+  const fen = '8/6P1/8/8/8/8/8/k6K w - - 0 1'
+  const chess = new Chess(fen)
+  
+  expect(() => {
+    chess.move('g8')
+  }).toThrow(/Invalid move: g8/)
+
+  const validMove = chess.move('g8=Q')
+  expect(validMove).not.toBeNull()
+  expect(validMove.promotion).toBe('q')
+})
