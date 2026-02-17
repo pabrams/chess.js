@@ -2,9 +2,11 @@
 
 # chess.js
 
-[![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/jhlywa/chess.js/node.js.yml)](https://github.com/jhlywa/chess.js/actions)
+[![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/pabrams/chess.js/node.js.yml)](https://github.com/pabrams/chess.js/actions)
 [![npm](https://img.shields.io/npm/v/chess.js?color=blue)](https://www.npmjs.com/package/chess.js)
 [![npm](https://img.shields.io/npm/dm/chess.js)](https://www.npmjs.com/package/chess.js)
+
+This is a fork of @jhlywa/chess.js that adds features such as "xray attack", (boolean `xray` parameter added to `attackers` method - see [Counting attackers, bearing in mind batteries #542](https://github.com/jhlywa/chess.js/issues/542)
 
 chess.js is a TypeScript chess library used for chess move
 generation/validation, piece placement/movement, and check/checkmate/stalemate
@@ -15,7 +17,7 @@ chess.js has been extensively tested in node.js and most modern browsers.
 ## Documentation
 
 This README provides a quick example, full documentation can be found at
-[https://jhlywa.github.io/chess.js](https://jhlywa.github.io/chess.js).
+[https://github.com/pabrams/chess.js](https://github.com/pabrams/chess.js).
 
 ## Installation
 
@@ -23,7 +25,7 @@ Run the following command to install the most recent version of chess.js from
 NPM:
 
 ```sh
-npm install chess.js
+npm install @pabrams/chess.js
 ```
 
 ## Example Code
