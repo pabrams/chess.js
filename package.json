@@ -1,5 +1,5 @@
 {
-  "name": "chess.js",
+  "name": "@pabrams/chess.js",
   "description": "TypeScript library for chess move generation, validation, execution, and game state - everything but the AI.",
   "version": "1.5.2",
   "license": "BSD-2-Clause",
