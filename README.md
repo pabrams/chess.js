@@ -6,7 +6,7 @@
 [![npm](https://img.shields.io/npm/v/chess.js?color=blue)](https://www.npmjs.com/package/chess.js)
 [![npm](https://img.shields.io/npm/dm/chess.js)](https://www.npmjs.com/package/chess.js)
 
-This is a fork of @jhlywa/chess.js that adds features such as "xray attack", (boolean `xray` parameter added to `attackers` method - see [Counting attackers, bearing in mind batteries #542](https://github.com/jhlywa/chess.js/issues/542)
+This is a fork of @jhlywa/chess.js that adds features such as "xray attack", (boolean `xray` parameter added to `attackers` method - see [Counting attackers, bearing in mind batteries #542](https://github.com/jhlywa/chess.js/issues/542)).
 
 chess.js is a TypeScript chess library used for chess move
 generation/validation, piece placement/movement, and check/checkmate/stalemate
