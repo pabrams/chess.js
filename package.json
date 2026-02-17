@@ -13,7 +13,7 @@
     "pgn",
     "typescript"
   ],
-  "author": "Jeff Hlywa <jhlywa@gmail.com>, Paul Abrams",
+  "author": "Jeff Hlywa <jhlywa@gmail.com>, Paul Abrams <github.com/pabrams>",
   "scripts": {
     "prepare": "npm run build",
     "build": "npm run parser && tsc --noEmit && rollup -c",
@@ -32,7 +32,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/jhlywa/chess.js"
+    "url": "https://github.com/pabrams/chess.js"
   },
   "engines": {
     "node": ">=20.0.0"

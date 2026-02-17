@@ -2,7 +2,7 @@
 
 Thank you for considering contributing to the project.
 
-Please use the [issue tracker](https://github.com/jhlywa/chess.js/issues) for:
+Please use the [issue tracker](https://github.com/pabrams/chess.js/issues) for:
 
 - Bug reports
 - Feature requests
@@ -66,7 +66,7 @@ the changes.
 
 ### Documentation
 
-You can view the existing documentation at https://jhlywa.github.io/chess.js
+You can view the existing documentation at https://github.com/pabrams/chess.js
 
 The documentation is versioned. The file you will need to edit is located at
 `website/docs/index.md`. When the next release is made, a snapshot of this file

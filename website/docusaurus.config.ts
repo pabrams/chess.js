@@ -13,14 +13,14 @@ const config: Config = {
   },
 
   // Set the production url of your site here
-  url: 'https://jhlywa.github.io',
+  url: 'https://pabrams.github.io',
   // Set the /<baseUrl>/ pathname under which your site is served
   // For GitHub pages deployment, it is often '/<projectName>/'
   baseUrl: '/chess.js/',
 
   // GitHub pages deployment config.
   // If you aren't using GitHub pages, you don't need these.
-  organizationName: 'jhlywa', // Usually your GitHub org/user name.
+  organizationName: 'pabrams', // Usually your GitHub org/user name.
   projectName: 'chess.js', // Usually your repo name.
 
   trailingSlash: true,
@@ -65,7 +65,7 @@ const config: Config = {
           position: 'right',
         },
         {
-          href: 'https://github.com/jhlywa/chess.js',
+          href: 'https://github.com/pabrams/chess.js',
           label: 'GitHub',
           position: 'right',
         },
@@ -83,16 +83,16 @@ const config: Config = {
           items: [
             {
               label: 'GitHub',
-              href: 'https://github.com/jhlywa/chess.js',
+              href: 'https://github.com/pabrams/chess.js',
             },
             {
               label: 'NPM',
-              href: 'https://www.npmjs.com/package/chess.js',
+              href: 'https://www.npmjs.com/package/@pabrams/chess.js/v/1.5.2',
             },
           ],
         },
       ],
-      copyright: `Copyright © ${new Date().getFullYear()} Jeff Hlywa.`,
+      copyright: `Copyright © ${new Date().getFullYear()} Jeff Hlywa, Paul Abrams.`,
     },
     prism: {
       theme: prismThemes.github,
